@@ -1,0 +1,529 @@
+[
+    {
+        "id": "1a2b3c4d5e6f",
+        "type": "tab",
+        "label": "Broker Catalog",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "e4610f7ea48299be",
+        "type": "sqlitedb",
+        "db": "/Users/luanguimaraes/.node-red/data/cep.db",
+        "mode": "RWC"
+    },
+    {
+        "id": "29572051838f335e",
+        "type": "sqlitedb",
+        "db": "/Users/luanguimaraes/.node-red/data/cep.db",
+        "mode": "RWC"
+    },
+    {
+        "id": "9c855877ca0d791f",
+        "type": "sqlitedb",
+        "db": "/Users/luanguimaraes/.node-red/data/cep.db",
+        "mode": "RWC"
+    },
+    {
+        "id": "ab6dbc0577985f35",
+        "type": "http in",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "url": "/corretoras",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 80,
+        "wires": [
+            [
+                "ab7f38d8cd46f809"
+            ]
+        ]
+    },
+    {
+        "id": "ab7f38d8cd46f809",
+        "type": "http request",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://brasilapi.com.br/api/cvm/corretoras/v1",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 300,
+        "y": 80,
+        "wires": [
+            [
+                "6e3b48daf47e75d8"
+            ]
+        ]
+    },
+    {
+        "id": "5b175826dd7e5e8c",
+        "type": "function",
+        "z": "1a2b3c4d5e6f",
+        "name": "Listar as Corretoras da BrasilAPI",
+        "func": "if (!Array.isArray(msg.payload)) {\n    msg.payload = \"Erro: resposta inesperada da API de corretoras.\";\n    return msg;\n}\n\n\nmsg.payload = msg.payload.map(corretora => ({\n    nome: corretora.nome_comercial || corretora.nome_social || \"Nome não informado\",\n    cidade: corretora.municipio || \"Cidade não informada\",\n    cnpj: corretora.cnpj || \"CNPJ indisponível\"\n}));\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 120,
+        "wires": [
+            [
+                "d91a3999d45cbbe0"
+            ]
+        ]
+    },
+    {
+        "id": "c40a102189aaf5f3",
+        "type": "debug",
+        "z": "1a2b3c4d5e6f",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "6e3b48daf47e75d8",
+        "type": "json",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 410,
+        "y": 180,
+        "wires": [
+            [
+                "5b175826dd7e5e8c",
+                "c40a102189aaf5f3"
+            ]
+        ]
+    },
+    {
+        "id": "73f3b7b4dc3d29be",
+        "type": "catch",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "scope": [
+            "6e3b48daf47e75d8"
+        ],
+        "uncaught": false,
+        "x": 380,
+        "y": 20,
+        "wires": [
+            [
+                "5b175826dd7e5e8c"
+            ]
+        ]
+    },
+    {
+        "id": "61a20ae5c1926920",
+        "type": "function",
+        "z": "1a2b3c4d5e6f",
+        "name": "Buscar CEP",
+        "func": "\nconst cep = msg.req.params.cep;\nmsg.method = \"GET\";\nmsg.url = `https://brasilapi.com.br/api/cep/v2/${cep}`;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 380,
+        "wires": [
+            [
+                "e3935411ada7172e"
+            ]
+        ]
+    },
+    {
+        "id": "604a775d5ed5a184",
+        "type": "http in",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "url": "/busca-cep/:cep",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 380,
+        "wires": [
+            [
+                "61a20ae5c1926920"
+            ]
+        ]
+    },
+    {
+        "id": "e3935411ada7172e",
+        "type": "http request",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 560,
+        "y": 380,
+        "wires": [
+            [
+                "9c197fd45436c5da",
+                "cd0d3ec7ab49cc37"
+            ]
+        ]
+    },
+    {
+        "id": "dd8a5c278700bfc8",
+        "type": "http in",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "url": "/cep",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 520,
+        "wires": [
+            [
+                "7e29aca3ea7984ba"
+            ]
+        ]
+    },
+    {
+        "id": "7e29aca3ea7984ba",
+        "type": "template",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Busca de CEP (BrasilAPI)</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      background-color: #f4f6f8;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      height: 100vh;\n    }\n\n    h1 {\n      color: #222;\n    }\n\n    .card {\n      background-color: white;\n      padding: 20px 40px;\n      border-radius: 10px;\n      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n      font-size: 18px;\n      margin-top: 20px;\n      min-width: 320px;\n    }\n\n    .input-group {\n      display: flex;\n      gap: 10px;\n      margin-bottom: 10px;\n    }\n\n    input {\n      padding: 10px;\n      border-radius: 5px;\n      border: 1px solid #ccc;\n      width: 200px;\n      font-size: 16px;\n    }\n\n    button {\n      padding: 10px 20px;\n      background-color: #007bff;\n      color: white;\n      border: none;\n      border-radius: 5px;\n      cursor: pointer;\n      font-size: 16px;\n    }\n\n    button:hover {\n      background-color: #0056b3;\n    }\n\n    .resultado p {\n      margin: 5px 0;\n    }\n  </style>\n</head>\n<body>\n  <h1>Busca de CEP (BrasilAPI)</h1>\n\n  <div class=\"input-group\">\n    <input type=\"text\" id=\"cep\" placeholder=\"Digite o CEP (ex: 30130010)\">\n    <button onclick=\"buscarCep()\">Buscar</button>\n  </div>\n\n  <div id=\"resultado\" class=\"card\" style=\"display: none;\">\n    <p><strong>CEP:</strong> <span id=\"rcep\"></span></p>\n    <p><strong>Rua:</strong> <span id=\"rlogradouro\"></span></p>\n    <p><strong>Bairro:</strong> <span id=\"rbairro\"></span></p>\n    <p><strong>Cidade:</strong> <span id=\"rcidade\"></span></p>\n    <p><strong>Estado:</strong> <span id=\"restado\"></span></p>\n  </div>\n\n  <script>\n    async function buscarCep() {\n      const cep = document.getElementById('cep').value.trim();\n\n      if (!cep) {\n        alert('Por favor, digite um CEP!');\n        return;\n      }\n\n      const response = await fetch(`/busca-cep/${cep}`);\n      if (!response.ok) {\n        alert('Erro ao buscar CEP. Verifique o valor digitado.');\n        return;\n      }\n\n      const data = await response.json();\n\n      document.getElementById('resultado').style.display = 'block';\n      document.getElementById('rcep').textContent = data.cep || '';\n      document.getElementById('rlogradouro').textContent = data.street || '';\n      document.getElementById('rbairro').textContent = data.neighborhood || '';\n      document.getElementById('rcidade').textContent = data.city || '';\n      document.getElementById('restado').textContent = data.state || '';\n    }\n  </script>\n</body>\n</html>\n",
+        "output": "str",
+        "x": 260,
+        "y": 520,
+        "wires": [
+            [
+                "bd1e04f80e371422"
+            ]
+        ]
+    },
+    {
+        "id": "9c197fd45436c5da",
+        "type": "http response",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 830,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "bd1e04f80e371422",
+        "type": "http response",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 430,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "85500ffe02e6783a",
+        "type": "http in",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "url": "/home",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 660,
+        "wires": [
+            [
+                "8cd928a182a69b4f"
+            ]
+        ]
+    },
+    {
+        "id": "8cd928a182a69b4f",
+        "type": "template",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>BrazilAPI - Node-RED Project (React Version)</title>\n\n  \n  <script src=\"https://unpkg.com/react@18/umd/react.development.js\"></script>\n  <script src=\"https://unpkg.com/react-dom@18/umd/react-dom.development.js\"></script>\n\n  <style>\n    body {\n      font-family: \"Segoe UI\", sans-serif;\n      background: linear-gradient(135deg, #007bff, #00c6ff);\n      color: #fff;\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      height: 100vh;\n      margin: 0;\n      animation: fadeIn 1s ease-in;\n    }\n\n    @keyframes fadeIn {\n      from { opacity: 0; transform: translateY(15px); }\n      to { opacity: 1; transform: translateY(0); }\n    }\n\n    .container {\n      text-align: center;\n      background: rgba(0, 0, 0, 0.35);\n      padding: 40px;\n      border-radius: 20px;\n      width: 90%;\n      max-width: 500px;\n      box-shadow: 0 0 15px rgba(0,0,0,0.4);\n      backdrop-filter: blur(8px);\n    }\n\n    .btn {\n      background: #fff;\n      color: #007bff;\n      text-decoration: none;\n      font-weight: bold;\n      padding: 14px;\n      border-radius: 10px;\n      transition: 0.3s ease-in-out;\n      box-shadow: 0px 0px 0px rgba(255,255,255,0.4);\n      display: block;\n      margin-bottom: 15px;\n    }\n\n    .btn:hover {\n      background: #007bff;\n      color: white;\n      transform: scale(1.05);\n      box-shadow: 0px 0px 10px rgba(255,255,255,0.8),\n                  0px 0px 25px rgba(255,255,255,0.6);\n    }\n  </style>\n</head>\n\n<body>\n  <div class=\"container\">\n    <h1>🚀 Node-RED + BrazilAPI + React</h1>\n    <p>Escolha uma das opções abaixo:</p>\n\n    \n    <div id=\"app\"></div>\n\n    <footer>\n      <p>Desenvolvido por <strong>Luan</strong> • Teste Técnico</p>\n    </footer>\n  </div>\n\n  <script>\n    const App = () => {\n      const buttons = [\n        { label: \"📈 Catálogo de Corretoras\", url: \"/corretoras\" },\n        { label: \"📍 Buscador de CEP\", url: \"/cep\" },\n        { label: \"📊 Histórico de CEPs\", url: \"/historico\" }\n      ];\n\n      return React.createElement(\n        \"div\",\n        null,\n        buttons.map((b) =>\n          React.createElement(\n            \"a\",\n            { href: b.url, className: \"btn\", key: b.url },\n            b.label\n          )\n        )\n      );\n    };\n\n    ReactDOM.createRoot(document.getElementById(\"app\")).render(\n      React.createElement(App)\n    );\n  </script>\n</body>\n</html>\n",
+        "output": "str",
+        "x": 280,
+        "y": 660,
+        "wires": [
+            [
+                "238d7965943faa0e"
+            ]
+        ]
+    },
+    {
+        "id": "238d7965943faa0e",
+        "type": "http response",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 450,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "d4474103fb2b2d13",
+        "type": "inject",
+        "z": "1a2b3c4d5e6f",
+        "name": "Criar Tabela",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 760,
+        "wires": [
+            [
+                "38de996cf162e3db"
+            ]
+        ]
+    },
+    {
+        "id": "38de996cf162e3db",
+        "type": "function",
+        "z": "1a2b3c4d5e6f",
+        "name": "Criar Tabela",
+        "func": "msg.topic = `\nCREATE TABLE IF NOT EXISTS historico_cep (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    cep TEXT,\n    logradouro TEXT,\n    bairro TEXT,\n    cidade TEXT,\n    estado TEXT,\n    data_hora TEXT\n);\n`;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 760,
+        "wires": [
+            [
+                "69a36a405bfd912e"
+            ]
+        ]
+    },
+    {
+        "id": "69a36a405bfd912e",
+        "type": "sqlite",
+        "z": "1a2b3c4d5e6f",
+        "mydb": "e4610f7ea48299be",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "",
+        "x": 660,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5d0dc605411cba76",
+        "type": "sqlite",
+        "z": "1a2b3c4d5e6f",
+        "mydb": "29572051838f335e",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "",
+        "x": 860,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cd0d3ec7ab49cc37",
+        "type": "function",
+        "z": "1a2b3c4d5e6f",
+        "name": "Salvar CEP no Banco",
+        "func": "const dataHora = new Date().toLocaleString(\"pt-BR\");\n\nmsg.topic = `\nINSERT INTO historico_cep (cep, logradouro, bairro, cidade, estado, data_hora)\nVALUES ('${msg.payload.cep}', '${msg.payload.street}', '${msg.payload.neighborhood}',\n        '${msg.payload.city}', '${msg.payload.state}', '${dataHora}')\n`;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 460,
+        "wires": [
+            [
+                "5d0dc605411cba76"
+            ]
+        ]
+    },
+    {
+        "id": "94d75eb3fa0b5a6b",
+        "type": "http in",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "url": "/historico",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 860,
+        "wires": [
+            [
+                "a5d3350e74da80a3"
+            ]
+        ]
+    },
+    {
+        "id": "a5d3350e74da80a3",
+        "type": "function",
+        "z": "1a2b3c4d5e6f",
+        "name": "Buscar histórico",
+        "func": "msg.topic = \"SELECT cep, logradouro, bairro, cidade, estado, data_hora FROM historico_cep ORDER BY id DESC\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 860,
+        "wires": [
+            [
+                "7c0ee90ff66766f2"
+            ]
+        ]
+    },
+    {
+        "id": "7c0ee90ff66766f2",
+        "type": "sqlite",
+        "z": "1a2b3c4d5e6f",
+        "mydb": "9c855877ca0d791f",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "",
+        "x": 680,
+        "y": 860,
+        "wires": [
+            [
+                "f02d7c0d2c2b0e41"
+            ]
+        ]
+    },
+    {
+        "id": "f02d7c0d2c2b0e41",
+        "type": "template",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Histórico de CEPs</title>\n\n    \n    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n\n    <style>\n        body {\n            background-color: #f2f4f7;\n        }\n\n        .container {\n            margin-top: 40px;\n        }\n\n        .table {\n            background: white;\n            border-radius: 12px;\n            overflow: hidden;\n        }\n\n        .voltar {\n            text-decoration: none;\n            font-weight: bold;\n        }\n\n        .voltar:hover {\n            text-decoration: underline;\n        }\n    </style>\n</head>\n\n<body>\n\n    <div class=\"container\">\n\n        <h2 class=\"text-center mb-4\">📊 Histórico de CEPs Pesquisados</h2>\n\n        <table class=\"table table-striped table-hover\">\n            <thead class=\"table-primary\">\n                <tr>\n                    <th>CEP</th>\n                    <th>Rua</th>\n                    <th>Bairro</th>\n                    <th>Cidade</th>\n                    <th>Estado</th>\n                    <th>Data/Hora</th>\n                </tr>\n            </thead>\n\n            <tbody>\n                {{#payload}}\n                <tr>\n                    <td>{{cep}}</td>\n                    <td>{{logradouro}}</td>\n                    <td>{{bairro}}</td>\n                    <td>{{cidade}}</td>\n                    <td>{{estado}}</td>\n                    <td>{{data_hora}}</td>\n                </tr>\n                {{/payload}}\n\n                {{^payload}}\n                <tr>\n                    <td colspan=\"6\" class=\"text-center text-muted\">Nenhuma consulta realizada ainda.</td>\n                </tr>\n                {{/payload}}\n            </tbody>\n        </table>\n\n        <div class=\"text-center mt-4\">\n            <a href=\"/home\" class=\"voltar btn btn-secondary\">⬅ Voltar</a>\n        </div>\n\n    </div>\n\n</body>\n\n</html>\n",
+        "output": "str",
+        "x": 980,
+        "y": 860,
+        "wires": [
+            [
+                "39922aa6269da90a"
+            ]
+        ]
+    },
+    {
+        "id": "39922aa6269da90a",
+        "type": "http response",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1150,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "d42317ec5dd61c5a",
+        "type": "http response",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1120,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "d91a3999d45cbbe0",
+        "type": "template",
+        "z": "1a2b3c4d5e6f",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>📊 Catálogo de Corretoras</title>\n\n  <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n\n  <style>\n    body {\n      background-color: #f5f6fa;\n      padding: 20px;\n    }\n    .card {\n      border-radius: 12px;\n      box-shadow: 0 2px 6px rgba(0,0,0,0.1);\n      padding: 15px;\n    }\n  </style>\n</head>\n\n<body>\n  <h2 class=\"text-center mb-4\">📊 Catálogo de Corretoras</h2>\n\n  <div class=\"container\">\n    <div class=\"row g-3\">\n      {{#payload}}\n      <div class=\"col-md-4 col-lg-3\">\n        <div class=\"card p-3\">\n          <h5>{{nome}}</h5>\n          <p>📍 <strong>Cidade:</strong> {{cidade}}</p>\n          <p>📄 <strong>CNPJ:</strong> {{cnpj}}</p>\n        </div>\n      </div>\n      {{/payload}}\n    </div>\n\n    <div class=\"text-center mt-4\">\n      <a href=\"/home\" class=\"btn btn-secondary\">⬅ Voltar</a>\n    </div>\n  </div>\n</body>\n</html>\n",
+        "output": "str",
+        "x": 960,
+        "y": 120,
+        "wires": [
+            [
+                "d42317ec5dd61c5a"
+            ]
+        ]
+    },
+    {
+        "id": "6ce353a1cdfe861e",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-sqlite": "1.1.1"
+        }
+    }
+]
