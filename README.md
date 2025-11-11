@@ -59,21 +59,6 @@ A aplicação utiliza **Node-RED** integrado com a **BrazilAPI**, permitindo:
 ├── 🗂️ **flows.json** — Fluxo exportado do Node-RED  
 └── 📄 **README.md** — Documentação do projeto  
 
-
----
-
-## 🖼️ Screenshots
-
-| 🏠 Home | 📈 Corretoras |
-|--------|-------------|
-| <img src="screenshots/home.png" width="430"/> | <img src="screenshots/corretoras.png" width="430"/> |
-
-| 📍 Busca CEP | 🗂️ Histórico |
-|-------------|--------------|
-| <img src="screenshots/busca-cep.png" width="430"/> | <img src="screenshots/historico.png" width="430"/> |
-
-
-
 ---
 
 ## ▶️ Como executar o projeto
@@ -94,4 +79,5 @@ node-red
 No Node-RED, clique em Menu > Import > Select a file
 Selecione o arquivo flows.json deste repositório
 Banco SQLite é criado automaticamente na primeira busca de CEP.
+
 
